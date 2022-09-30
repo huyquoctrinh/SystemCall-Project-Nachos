@@ -50,4 +50,15 @@ class SynchConsoleOutput : public CallBackObj {
     void CallBack();		// called when more data can be written
 };
 
-#endif // SYNCHCONSOLE_H
+class SynchConsole{
+  
+  public:
+
+    SynchConsole(void);
+    ~SynchConsole(void);
+
+    int ReadNum();
+
+};
+
+#endif  SYNCHCONSOLE_H

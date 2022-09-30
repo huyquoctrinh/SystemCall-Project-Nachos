@@ -21,17 +21,10 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation 
 // of liability and disclaimer of warranty provisions.
 
-// #ifndef USER_PROGRAM;
 #include "copyright.h"
 #include "main.h"
 #include "syscall.h"
-#include "directory.h"
-#include "system.h"
-#include "synch.h"
 #include "ksyscall.h"
-#include "synchconsole.h"
-// extern SynchConsole *gSynchConsole;
-
 //----------------------------------------------------------------------
 // ExceptionHandler
 // 	Entry point into the Nachos kernel.  Called when a user program
@@ -55,7 +48,7 @@
 //	is in machine.h.
 //----------------------------------------------------------------------
 
-void 
+void
 ExceptionHandler(ExceptionType which)
 {
     int type = kernel->machine->ReadRegister(2);
@@ -65,11 +58,6 @@ ExceptionHandler(ExceptionType which)
     switch (which) {
     case SyscallException:
       switch(type) {
-
-	  case SC_ReadNum:
-
-	  	ReadNum();
-
       case SC_Halt:
 	DEBUG(dbgSys, "Shutdown, initiated by user program.\n");
 
@@ -118,107 +106,4 @@ ExceptionHandler(ExceptionType which)
       break;
     }
     ASSERTNOTREACHED();
-}
-
-int ReadNum(){
-
-	int len = 11;
-	char* numberInput = new char[len];
-	unsigned long long tmp = 0;
-
-	for (int i = 0; i <len; i++){
-		
-		char inp = 0;
-		SynchConsoleInput(&inp,1);
-
-		if (inp >= '0' && inp <= '9'){
-			numberInput[i] = inp;
-		}
-		else if ((i == 0) && (inp = '-')){
-			numberInput[i] = inp;
-		}
-		else{
-			break;
-		}
-
-	}
-
-	int cnt = 0;
-	if (numberInput[0] == '-'){
-		
-		cnt = 1;
-
-	}
-
-	while (cnt < len && numberInput[cnt] >= '0' && numberInput[cnt] <= '9')
-	{
-		tmp = tmp * 10 + numberInput[cnt+1] - '0';
-	}
-
-	if (numberInput[0] == '-'){
-		tmp = -tmp;
-	}
-
-	machine->WriteRegister(2, (int)tmp);
-
-}
-
-void ReadString(){
-	
-	int tmp = machine->ReadRegister(4);
-	int length = machine->ReadRegister(5);
-
-	char* buffer = NULL;
-
-	if (length >0){
-
-		buffer = new char[length];
-		
-		if (buffer == NULL){
-
-			char message[] = "Memory not enough \n";
-			SynchConsoleInput(message, strlen(message));
-		
-		}
-
-		else{
-
-			memset(buffer, 0, length);
-
-		}
-
-	}
-
-	if (buffer != NULL){
-
-		gSynchConsole->Read(buffer, length-1);
-		
-		for (int i = 0; i < strlen(buffer) - 1; i++){
-
-			machine->WriteMem(tmp + i, 1, (int) buffer[i]);
-		
-		}
-
-		delete[] buffer;
-
-	}
-
-	machine->WriteRegister(2,0);
-
-}
-
-void ReadChar(){
-	
-	char res = 0 ;
-	gSynchConsole->Read(&res,1);
-	machine->WriteRegister(2, (int)res);
-
-}
-
-void printChar(){
-
-	char printResult = machine->ReadRegister(4);
-	gSynchConsole->Read(&printResult,1);
-	machine->WriteRegister(2,0)
-
 }
